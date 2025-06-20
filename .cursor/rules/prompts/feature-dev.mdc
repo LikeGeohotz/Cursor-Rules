@@ -1,0 +1,85 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Feature Development Prompt
+
+## Feature Development Process
+
+### 1. Planning Phase
+
+- **Understand Requirements**: What problem does this feature solve?
+- **Define User Stories**: Who is the user and what are their goals?
+- **Identify Dependencies**: What existing code/features does this depend on?
+- **Plan Architecture**: How will this integrate with the current system?
+
+### 2. Design Phase
+
+- **UI/UX Design**: Sketch out the user interface
+- **Data Model**: Define database schema changes if needed
+- **API Design**: Plan Server Actions or API routes
+- **Component Structure**: Identify reusable components
+
+### 3. Implementation Phase
+
+- **Start with Data Layer**: Create/update Prisma schema
+- **Build Server Logic**: Implement Server Actions with validation
+- **Create Components**: Build UI components following our patterns
+- **Integrate State Management**: Use TanStack Query for server state
+
+### 4. Testing Phase
+
+- **Unit Tests**: Test individual components and functions
+- **Integration Tests**: Test feature workflows
+- **E2E Tests**: Test complete user journeys
+- **Manual Testing**: Verify edge cases and user experience
+
+## Feature Development Checklist
+
+### Planning
+
+- [ ] Requirements clearly defined
+- [ ] User stories documented
+- [ ] Technical approach planned
+- [ ] Dependencies identified
+- [ ] Timeline estimated
+
+### Database & Schema
+
+- [ ] Prisma schema updated if needed
+- [ ] Migrations created and tested
+- [ ] Seed data updated if necessary
+- [ ] RLS policies added for new tables
+
+### Backend Implementation
+
+- [ ] Server Actions created with proper validation
+- [ ] Zod schemas defined for input/output
+- [ ] Authentication checks implemented
+- [ ] Error handling added
+- [ ] Database queries optimized
+
+### Frontend Implementation
+
+- [ ] Components follow naming conventions
+- [ ] Props interfaces properly defined
+- [ ] State management strategy chosen
+- [ ] Loading and error states handled
+- [ ] Responsive design implemented
+- [ ] Accessibility considerations addressed
+
+### Testing
+
+- [ ] Unit tests written for logic
+- [ ] Component tests created
+- [ ] Integration tests cover workflows
+- [ ] E2E tests cover user journeys
+- [ ] Edge cases tested
+
+### Documentation
+
+- [ ] Code comments added where needed
+- [ ] README updated if necessary
+- [ ] API documentation updated
+- [ ] Architecture docs updated if changed

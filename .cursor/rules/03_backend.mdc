@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+### Schema Management
+
+- The single source of truth for the database schema is the `schema.prisma` file.
+- NEVER modify the database schema directly through the Supabase UI. Always use `prisma migrate dev` to apply schema changes.
+
+### Database Access
+
+- ALL database queries MUST be executed through the **Prisma Client**. Do not use the Supabase JS library (`supabase-js`) for direct table access.
+- Instantiate a single, shared Prisma Client instance and export it from a central file (e.g., `src/lib/prisma.ts`).
+
+### Authentication & Authorization
+
+- Use the **Supabase Auth client** (`@supabase/auth-helpers-nextjs`) for all user authentication tasks (sign-up, sign-in, session management).
+- Backend logic (e.g., API routes, Server Actions) MUST validate the user's session from Supabase before executing any sensitive operations.
+- Implement Row-Level Security (RLS) policies in Supabase for an additional layer of data protection, especially for tables containing user-specific data.
+
+### API & Server Logic
+
+- Place all database-interacting server-side logic in **Server Actions** or API Routes.
+- Input data from the client (e.g., form submissions) MUST be validated using **Zod** on the server before being passed to Prisma.
+- Wrap all server-side logic that performs mutations or sensitive operations in `try/catch` blocks for robust error handling.
+
+### Data Sync
+
+- When a new user signs up via Supabase Auth, create a corresponding record in your public `users` table (or similar) using a database trigger and function, or a dedicated API call. This syncs Supabase's `auth.users` with your public user profiles.

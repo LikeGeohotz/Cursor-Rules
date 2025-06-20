@@ -1,0 +1,125 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Refactoring Prompt
+
+## Refactoring Goals
+
+### 1. Code Organization
+
+- Extract reusable components following the Rule of Three
+- Separate concerns between presentation and business logic
+- Move shared logic to custom hooks
+- Organize code by feature when appropriate
+
+### 2. Performance Optimization
+
+- Identify and fix unnecessary re-renders
+- Optimize heavy computations with useMemo/useCallback
+- Implement proper lazy loading
+- Optimize database queries and reduce N+1 problems
+
+### 3. Maintainability
+
+- Reduce code duplication
+- Improve naming and documentation
+- Simplify complex logic
+- Remove dead code and unused imports
+
+### 4. Type Safety
+
+- Strengthen TypeScript types
+- Remove any types and improve type inference
+- Add proper error boundaries
+- Validate data with Zod schemas
+
+## Refactoring Process
+
+### Before Refactoring
+
+1. **Understand the Current Code**: Analyze what the code does and why
+2. **Identify Pain Points**: Look for code smells and areas of difficulty
+3. **Plan the Changes**: Outline the refactoring steps
+4. **Ensure Test Coverage**: Write tests if they don't exist
+
+### During Refactoring
+
+1. **Make Small, Incremental Changes**: Refactor in small steps
+2. **Keep Functionality Intact**: Don't change behavior unless intended
+3. **Test Frequently**: Run tests after each change
+4. **Commit Often**: Make atomic commits for each logical change
+
+### After Refactoring
+
+1. **Verify All Tests Pass**: Ensure nothing is broken
+2. **Update Documentation**: Reflect any architectural changes
+3. **Review Performance**: Confirm improvements were achieved
+4. **Get Team Review**: Have others review the changes
+
+## Common Refactoring Patterns
+
+### Component Extraction
+
+```typescript
+// Before: Large component doing multiple things
+const UserDashboard = () => {
+  // 100+ lines of mixed concerns
+};
+
+// After: Extracted smaller components
+const UserDashboard = () => {
+  return (
+    <div>
+      <UserProfile />
+      <UserStats />
+      <UserActions />
+    </div>
+  );
+};
+```
+
+### Custom Hook Extraction
+
+```typescript
+// Before: Logic scattered in components
+const [data, setData] = useState();
+const [loading, setLoading] = useState(false);
+// ... fetch logic
+
+// After: Extracted to custom hook
+const { data, loading, error } = useUserData(userId);
+```
+
+### Server Action Optimization
+
+```typescript
+// Before: Multiple database calls
+const getUserWithPosts = async (userId: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const posts = await prisma.post.findMany({ where: { userId } });
+  return { user, posts };
+};
+
+// After: Single optimized query
+const getUserWithPosts = async (userId: string) => {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    include: { posts: true },
+  });
+};
+```
+
+## Refactoring Checklist
+
+- [ ] Extract duplicate code into reusable functions/components
+- [ ] Move business logic to custom hooks or server actions
+- [ ] Optimize database queries and reduce round trips
+- [ ] Improve component prop interfaces
+- [ ] Add proper error handling and loading states
+- [ ] Implement proper TypeScript types
+- [ ] Remove unused code and dependencies
+- [ ] Update tests to reflect changes
+- [ ] Ensure accessibility is maintained
+- [ ] Verify performance improvements

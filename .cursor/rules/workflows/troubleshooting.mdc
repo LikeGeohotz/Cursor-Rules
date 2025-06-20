@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Troubleshooting Guide
+
+## General Troubleshooting Approach
+
+### 1. Identify the Problem
+
+- What is the expected behavior?
+- What is the actual behavior?
+- When did the issue start occurring?
+- Can you reproduce the issue consistently?
+- What error messages (if any) are displayed?
+
+### 2. Gather Information
+
+- Check browser console for JavaScript errors
+- Review Network tab for failed requests
+- Examine server logs (Vercel, Supabase)
+- Check recent code changes
+- Verify environment configuration
+
+### 3. Systematic Investigation
+
+- Start with the most likely causes
+- Change one thing at a time
+- Document what you've tried
+- Test each change thoroughly

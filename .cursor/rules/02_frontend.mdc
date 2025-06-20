@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+### Component Design & Refactoring Philosophy
+
+1.  **Single Responsibility Principle (SRP):** Each component should have one, and only one, reason to change. Avoid creating "god components" that do too many things.
+2.  **Composition over Inheritance:** Build complex UIs by combining simple, reusable components. Favor component composition and passing props (`children`) over complex inheritance patterns.
+3.  **Prop Drilling vs. Context/State Management:**
+    - Avoid "prop drilling" (passing props through many layers of components).
+    - If a prop is passed down more than 2-3 levels, consider it a signal to either use component composition, elevate the state, or move the state to a global state manager (Zustand).
+4.  **Refactoring Guideline (The Rule of Three):**
+    - When you find yourself copying and pasting a piece of code for the third time, it's a strong signal that it should be refactored into a reusable component or a utility function.
+    - When refactoring, aim to extract pure, logic-less "dumb" components and keep state and logic in "smart" container components.
+
+### File and Directory Structure
+
+- **Component Naming:** Component files and directories must be in `PascalCase` (e.g., `src/components/ui/UserProfile.tsx`).
+- **Directory Organization:**
+  - `src/components/ui/`: Reusable, logic-less, application-agnostic UI primitives (e.g., Button, Input, Card).
+  - `src/features/[feature-name]/components/`: Feature-specific, stateful, composite components that orchestrate UI primitives.
+  - `src/hooks/`: Reusable custom React hooks.
+
+### Component Definition & Props
+
+- **Function Definition:** Always define components as arrow functions assigned to a `const`.
+- **Exports:** ALWAYS use named exports for components and functions. Default exports are forbidden.
+- **Props Interface:** A component's props are its public API. Define them to be clear and predictable using a TypeScript `interface` or `type` directly above the component definition.
+
+### Styling
+
+- **Utility-First:** ALWAYS use Tailwind CSS utility classes directly in JSX.
+- **No Custom CSS Files:** Do NOT write custom CSS in separate `.css` files.
+- **`global.css` Restrictions:** Only use `global.css` for base styles (`@layer base`) or third-party library overrides.
+- **Component Classes:** If a reusable component class is necessary, define it using `@apply` within `@layer components` in `global.css`.
+- **Conditional Styles:** ALWAYS use the `clsx` utility for conditional class application. For variants, use `cva`.
+
+### State Management
+
+- **Server State:** ALWAYS use **TanStack Query** for data fetching, caching, and mutations. The query function will call our server-side logic (e.g., Server Actions).
+- **Global Client State:** ALWAYS use **Zustand** for client state shared across multiple pages or deep component trees.
+- **Local State:** Use `useState` or `useReducer` for state that is local to a single component.
+
+### Forms
+
+- **Implementation:** ALWAYS use **React Hook Form**.
+- **Validation:** ALWAYS use **Zod** for schema-based validation on both client and server.
+
+### Accessibility (a11y)
+
+- Ensure all interactive elements are fully accessible. Use semantic HTML and add ARIA attributes (`aria-label`, `role`, etc.) where necessary.
+- Interactive non-button elements (like `div` or `span` with an `onClick`) must have `role="button"` and `tabIndex={0}`.

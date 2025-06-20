@@ -1,0 +1,138 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Architecture Overview
+
+This document outlines the high-level architecture of our application.
+
+## 1. System Context Diagram
+
+(ここに、ユーザー、本アプリケーション、Supabase、外部 API などの関係性を示すシンプルな図を挿入、または Mermaid 記法で記述)
+
+```mermaid
+graph TD
+    A[User] -- Interacts via Browser --> B(Next.js App on Vercel);
+    B -- Authenticates with --> C(Supabase Auth);
+    B -- Reads/Writes Data via Prisma --> D(PostgreSQL on Supabase);
+    B -- Manages Files with --> E(Supabase Storage);
+```
+
+## 2. Frontend Architecture
+
+**Framework**: Next.js (App Router)
+**Rendering Strategy**: We primarily use Server-Side Rendering (SSR) for dynamic pages and Static Site Generation (SSG) with Incremental Static Regeneration (ISR) for content pages.
+**Component Structure**: We follow a feature-based directory structure (src/features) combined with a shared UI library (src/components/ui).
+
+## 3. Backend Architecture
+
+**Runtime**: Next.js Server Actions and API Routes.
+**Database**: PostgreSQL hosted on Supabase.
+**ORM**: Prisma is used for all database interactions.
+**Authentication**: Managed entirely by Supabase Auth. A JWT from Supabase is used to authenticate requests to our backend.
+
+## 4. Technology Stack
+
+### Frontend
+
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui, Radix UI
+- **State Management**:
+  - Server State: TanStack Query
+  - Global Client State: Zustand
+  - Local State: React Hooks
+- **Forms**: React Hook Form + Zod
+
+### Backend
+
+- **Database**: PostgreSQL (hosted on Supabase)
+- **ORM**: Prisma
+- **Authentication**: Supabase Auth
+- **Storage**: Supabase Storage
+- **API**: Next.js Server Actions + API Routes
+
+### Development & Testing
+
+- **Test Runner**: Vitest
+- **Component Testing**: React Testing Library
+- **E2E Testing**: Playwright
+- **Package Manager**: npm/yarn/pnpm
+
+### Deployment
+
+- **Hosting**: Vercel
+- **Database & Auth**: Supabase
+- **CI/CD**: Vercel's built-in deployment pipeline
+
+## 5. Directory Structure
+
+```
+src/
+├── app/                   # Next.js App Router pages
+│   ├── (auth)/            # Authentication-related routes
+│   ├── dashboard/         # Protected dashboard routes
+│   └── api/               # API routes
+├── components/
+│   ├── ui/                # Reusable UI primitives
+│   └── features/          # Feature-specific components
+├── features/              # Feature-based organization
+│   └── [feature-name]/
+│       ├── components/    # Feature-specific components
+│       ├── hooks/         # Feature-specific hooks
+│       └── types/         # Feature-specific types
+├── lib/                   # Utility libraries
+│   ├── prisma.ts          # Prisma client instance
+│   ├── supabase.ts        # Supabase client configuration
+│   └── utils.ts           # General utilities
+├── hooks/                 # Shared React hooks
+├── types/                 # Global TypeScript types
+└── styles/                # Global styles
+```
+
+## 6. Data Flow
+
+### Authentication Flow
+
+1. User interacts with login/signup form
+2. Credentials sent to Supabase Auth via client-side code
+3. Supabase returns JWT token and user session
+4. Session stored in browser cookies/localStorage
+5. Server Actions validate session before database operations
+
+### Data Access Pattern
+
+1. Frontend components use TanStack Query for data fetching
+2. TanStack Query calls Server Actions or API routes
+3. Server Actions validate user session with Supabase
+4. Validated requests use Prisma Client to query PostgreSQL
+5. Data returned through the chain back to components
+
+### State Management Strategy
+
+- **Server State**: Cached and managed by TanStack Query
+- **Global Client State**: Managed by Zustand stores
+- **Local Component State**: Managed by React hooks
+- **Form State**: Managed by React Hook Form
+
+## 7. Security Considerations
+
+### Authentication & Authorization
+
+- JWT tokens from Supabase Auth for user sessions
+- Server-side session validation for all protected operations
+- Row-Level Security (RLS) policies in PostgreSQL
+
+### Data Validation
+
+- Client-side validation with Zod schemas
+- Server-side validation with the same Zod schemas
+- Prisma schema constraints at database level
+
+### API Security
+
+- CSRF protection through Next.js built-in mechanisms
+- Rate limiting (if implemented)
+- Input sanitization and validation

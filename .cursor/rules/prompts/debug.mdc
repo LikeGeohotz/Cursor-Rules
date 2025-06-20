@@ -1,0 +1,189 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Debug Prompt
+
+## Debugging Approach
+
+### 1. Problem Identification
+
+- What is the expected behavior?
+- What is the actual behavior?
+- When did this issue first appear?
+- Can you reproduce the issue consistently?
+
+### 2. Information Gathering
+
+- Check browser console for errors
+- Review network requests in DevTools
+- Examine database logs if applicable
+- Look for recent code changes
+
+### 3. Systematic Investigation
+
+- Start with the most likely causes
+- Use debugging tools effectively
+- Test hypotheses one at a time
+- Document findings as you go
+
+## Common Debugging Scenarios
+
+### Frontend Issues
+
+#### React Component Issues
+
+- **Props not updating**: Check parent component re-renders
+- **State not updating**: Verify useState/useEffect dependencies
+- **Infinite re-renders**: Look for missing dependency arrays
+- **Components not mounting**: Check conditional rendering logic
+
+#### Styling Issues
+
+- **Tailwind classes not applying**: Check for typos, conflicting classes
+- **Layout broken**: Inspect CSS Grid/Flexbox properties
+- **Responsive issues**: Test different breakpoints
+
+#### State Management Issues
+
+- **TanStack Query**: Check query keys, stale time, cache invalidation
+- **Zustand**: Verify store updates and subscriptions
+- **Form state**: Debug React Hook Form validation and submission
+
+### Backend Issues
+
+#### Server Actions
+
+- **Authentication errors**: Verify Supabase session validation
+- **Database errors**: Check Prisma queries and constraints
+- **Validation errors**: Ensure Zod schemas match input data
+
+#### API Routes
+
+- **CORS issues**: Check Next.js API configuration
+- **Request/Response format**: Verify JSON structure
+- **Rate limiting**: Check for too many requests
+
+#### Database Issues
+
+- **Connection problems**: Verify Supabase connection string
+- **Query performance**: Use EXPLAIN ANALYZE for slow queries
+- **Migration issues**: Check Prisma migration status
+
+## Debugging Tools
+
+### Browser DevTools
+
+```javascript
+// Console debugging
+console.log("Debug point:", { variable, state });
+console.table(arrayData);
+console.trace("Function call stack");
+
+// Performance debugging
+console.time("operation");
+// ... code to measure
+console.timeEnd("operation");
+```
+
+### React DevTools
+
+- Component tree inspection
+- Props and state visualization
+- Profiler for performance analysis
+
+### Database Debugging
+
+```sql
+-- Check query performance
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
+
+-- Check active connections
+SELECT * FROM pg_stat_activity;
+```
+
+### Network Debugging
+
+- Network tab in DevTools
+- Response/Request headers
+- Timing information
+
+## Debugging Checklist
+
+### Before You Start
+
+- [ ] Reproduce the issue reliably
+- [ ] Note any error messages exactly
+- [ ] Check recent code changes
+- [ ] Verify environment setup
+
+### During Debugging
+
+- [ ] Use appropriate debugging tools
+- [ ] Test one hypothesis at a time
+- [ ] Document your findings
+- [ ] Take screenshots/logs of errors
+
+### Common Fixes
+
+- [ ] Clear browser cache and localStorage
+- [ ] Restart development server
+- [ ] Check environment variables
+- [ ] Verify dependency versions
+- [ ] Review recent Git commits
+- [ ] Check database connection
+- [ ] Validate API endpoints
+- [ ] Test in different browsers
+
+### After Fixing
+
+- [ ] Verify the fix works consistently
+- [ ] Add tests to prevent regression
+- [ ] Document the solution
+- [ ] Consider if similar issues exist elsewhere
+
+## Error Patterns and Solutions
+
+### "Cannot read property of undefined"
+
+```typescript
+// Problem: Accessing property before data loads
+user.name; // Error if user is undefined
+
+// Solution: Optional chaining and loading states
+user?.name;
+{
+  loading ? <Spinner /> : <UserProfile user={user} />;
+}
+```
+
+### "Hydration Mismatch"
+
+```typescript
+// Problem: Server and client render differently
+const timestamp = new Date().toISOString(); // Different on server/client
+
+// Solution: Use useEffect for client-only code
+const [timestamp, setTimestamp] = useState("");
+useEffect(() => {
+  setTimestamp(new Date().toISOString());
+}, []);
+```
+
+### "Failed to fetch"
+
+```typescript
+// Problem: Network request fails
+fetch("/api/users"); // May fail due to CORS, network, etc.
+
+// Solution: Proper error handling
+try {
+  const response = await fetch("/api/users");
+  if (!response.ok) throw new Error("Failed to fetch users");
+  const users = await response.json();
+} catch (error) {
+  console.error("Error fetching users:", error);
+  // Handle error appropriately
+}
+```

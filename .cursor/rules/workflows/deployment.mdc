@@ -1,0 +1,307 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Deployment Workflow
+
+## Environment Overview
+
+### Environments
+
+- **Development**: Local development environment
+- **Staging**: Pre-production testing (Vercel preview deployments)
+- **Production**: Live application (Vercel production)
+
+### Services
+
+- **Frontend**: Vercel
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Storage**: Supabase Storage
+
+## Deployment Process
+
+### 1. Pre-Deployment Checklist
+
+#### Code Quality
+
+- [ ] All tests pass (`npm run test`)
+- [ ] No linting errors (`npm run lint`)
+- [ ] TypeScript compilation successful (`npm run type-check`)
+- [ ] Build succeeds (`npm run build`)
+- [ ] No console errors in development
+
+#### Database
+
+- [ ] Schema migrations tested locally
+- [ ] Prisma schema is up to date
+- [ ] Seed data is current (if applicable)
+- [ ] RLS policies are properly configured
+
+#### Environment Variables
+
+- [ ] All required environment variables are set
+- [ ] Secrets are properly configured in Vercel
+- [ ] Supabase connection strings are correct
+
+### 2. Development Deployment
+
+```bash
+# Local development
+npm run dev
+
+# Check local build
+npm run build
+npm start
+
+# Run tests
+npm run test
+npm run test:e2e
+```
+
+### 3. Staging Deployment
+
+#### Automatic Staging (Preview Deployments)
+
+- Push to any branch automatically creates a preview deployment
+- Vercel generates unique URL for testing
+- Database typically points to staging/development Supabase project
+
+#### Manual Staging
+
+```bash
+# Deploy to Vercel staging
+vercel --env staging
+
+# Or using GitHub integration
+# Push to develop branch triggers staging deployment
+```
+
+### 4. Production Deployment
+
+#### Automated Production (Recommended)
+
+```bash
+# 1. Merge to main branch
+git checkout main
+git merge develop
+git push origin main
+
+# 2. Vercel automatically deploys from main branch
+# 3. Monitor deployment in Vercel dashboard
+```
+
+#### Manual Production
+
+```bash
+# Deploy to production
+vercel --prod
+
+# Tag the release
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+```
+
+## Database Migration Strategy
+
+### Development to Staging
+
+```bash
+# Generate migration
+npx prisma migrate dev --name feature_description
+
+# Apply to staging database
+npx prisma migrate deploy
+```
+
+### Staging to Production
+
+```bash
+# Ensure staging migrations are tested
+# Apply to production (usually via CI/CD)
+npx prisma migrate deploy
+
+# Or manually if needed
+DATABASE_URL="production_url" npx prisma migrate deploy
+```
+
+## Environment Variables
+
+### Required Variables
+
+#### Next.js
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+#### Supabase
+
+```env
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+#### Database
+
+```env
+DATABASE_URL=your_postgres_connection_string
+DIRECT_URL=your_direct_postgres_connection_string
+```
+
+### Vercel Configuration
+
+1. Go to Vercel dashboard
+2. Select your project
+3. Navigate to Settings > Environment Variables
+4. Add variables for each environment (Production, Preview, Development)
+
+## Rollback Strategy
+
+### Quick Rollback (Vercel)
+
+1. Go to Vercel dashboard
+2. Navigate to Deployments
+3. Find previous working deployment
+4. Click "Promote to Production"
+
+### Git Rollback
+
+```bash
+# Revert to previous commit
+git checkout main
+git revert HEAD
+git push origin main
+
+# Or reset to specific commit (dangerous)
+git reset --hard <previous_commit_hash>
+git push --force origin main
+```
+
+### Database Rollback
+
+```bash
+# If migration needs to be rolled back
+npx prisma migrate reset  # Development only!
+
+# For production, create reverse migration
+npx prisma migrate dev --name rollback_feature_name
+```
+
+## Monitoring and Health Checks
+
+### Post-Deployment Verification
+
+- [ ] Application loads without errors
+- [ ] Authentication works properly
+- [ ] Database connections are stable
+- [ ] All critical user flows function
+- [ ] Performance metrics are acceptable
+
+### Monitoring Tools
+
+- **Vercel Analytics**: Performance and usage metrics
+- **Supabase Dashboard**: Database health and performance
+- **Error Tracking**: Set up error monitoring (Sentry, etc.)
+- **Uptime Monitoring**: External monitoring service
+
+## Troubleshooting
+
+### Common Deployment Issues
+
+#### Build Failures
+
+```bash
+# Check build logs in Vercel dashboard
+# Common causes:
+# - TypeScript errors
+# - Missing environment variables
+# - Import/export issues
+# - Package dependencies
+```
+
+#### Database Connection Issues
+
+```bash
+# Verify environment variables
+echo $DATABASE_URL
+
+# Test connection
+npx prisma db pull
+
+# Check Supabase dashboard for connection limits
+```
+
+#### Authentication Issues
+
+```bash
+# Verify Supabase keys
+# Check redirect URLs in Supabase dashboard
+# Ensure CORS settings are correct
+```
+
+### Emergency Procedures
+
+#### Complete Rollback
+
+1. Immediately rollback to previous Vercel deployment
+2. Communicate issue to stakeholders
+3. Create hotfix branch if needed
+4. Test thoroughly before re-deploying
+
+#### Database Emergency
+
+1. Check Supabase dashboard for issues
+2. Review recent migrations
+3. Consider read-only mode if needed
+4. Contact Supabase support if infrastructure issue
+
+## CI/CD Pipeline (Future Enhancement)
+
+### GitHub Actions Example
+
+```yaml
+name: Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm run test
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+```
+
+## Security Considerations
+
+### Deployment Security
+
+- Never commit secrets to repository
+- Use environment variables for all sensitive data
+- Regularly rotate API keys and tokens
+- Monitor for unauthorized access
+- Keep dependencies updated
+
+### Database Security
+
+- Use connection pooling
+- Enable RLS policies
+- Regular security audits
+- Backup strategies in place
+- Monitor for unusual activity

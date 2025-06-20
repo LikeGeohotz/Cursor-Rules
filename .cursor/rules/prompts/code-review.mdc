@@ -1,0 +1,63 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Code Review Prompt
+
+## Review Focus Areas
+
+### 1. Code Quality
+
+- Does the code follow our established rules in `.cursor/rules/`?
+- Is the code readable and well-structured?
+- Are there any code smells or anti-patterns?
+- Is error handling properly implemented?
+
+### 2. Security
+
+- Are there any security vulnerabilities?
+- Is user input properly validated and sanitized?
+- Are authentication and authorization correctly implemented?
+- Are sensitive data properly protected?
+
+### 3. Performance
+
+- Are there any obvious performance bottlenecks?
+- Is the code efficiently using React hooks and state management?
+- Are database queries optimized?
+- Is proper caching implemented where needed?
+
+### 4. Testing
+
+- Is the code testable?
+- Are there sufficient tests covering the functionality?
+- Do tests follow our testing guidelines?
+
+### 5. Architecture Compliance
+
+- Does the code follow our architecture patterns?
+- Is the component structure appropriate?
+- Are dependencies properly managed?
+- Is the separation of concerns maintained?
+
+## Review Instructions
+
+1. **Be Constructive**: Provide specific, actionable feedback
+2. **Reference Standards**: Point to relevant rules or documentation
+3. **Suggest Improvements**: Don't just identify problems, suggest solutions
+4. **Consider Context**: Understand the broader feature and user impact
+5. **Prioritize Issues**: Distinguish between critical fixes and nice-to-haves
+
+## Review Checklist
+
+- [ ] Code follows TypeScript best practices
+- [ ] Components use proper naming conventions (PascalCase)
+- [ ] Server Actions include proper error handling
+- [ ] Database queries use Prisma appropriately
+- [ ] Authentication is properly validated
+- [ ] Styling uses Tailwind classes consistently
+- [ ] Tests are present and meaningful
+- [ ] No hardcoded values or magic numbers
+- [ ] Props interfaces are well-defined
+- [ ] Accessibility considerations are addressed
