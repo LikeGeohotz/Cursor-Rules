@@ -1,8 +1,9 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
+
 ### Component Design & Refactoring Philosophy
 
 1.  **Single Responsibility Principle (SRP):** Each component should have one, and only one, reason to change. Avoid creating "god components" that do too many things.
@@ -30,11 +31,12 @@ alwaysApply: true
 
 ### Styling
 
-- **Utility-First:** ALWAYS use Tailwind CSS utility classes directly in JSX.
+- **Utility-First:** ALWAYS use Tailwind CSS v4 utility classes directly in JSX.
 - **No Custom CSS Files:** Do NOT write custom CSS in separate `.css` files.
 - **`global.css` Restrictions:** Only use `global.css` for base styles (`@layer base`) or third-party library overrides.
 - **Component Classes:** If a reusable component class is necessary, define it using `@apply` within `@layer components` in `global.css`.
 - **Conditional Styles:** ALWAYS use the `clsx` utility for conditional class application. For variants, use `cva`.
+- **Tailwind v4 Features:** Utilize new Tailwind v4 features such as improved CSS-in-JS support and enhanced performance optimizations.
 
 ### State Management
 

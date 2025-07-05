@@ -1,8 +1,9 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
+
 # Project Architecture Overview
 
 This document outlines the high-level architecture of our application.
@@ -34,9 +35,10 @@ graph TD
 
 ### Frontend
 
-- **Framework**: Next.js 14+ (App Router)
+- **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **React Version**: React 19 (latest)
+- **Styling**: Tailwind CSS v4 (latest)
 - **UI Components**: shadcn/ui, Radix UI
 - **State Management**:
   - Server State: TanStack Query

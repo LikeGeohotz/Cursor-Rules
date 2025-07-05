@@ -1,0 +1,275 @@
+---
+description: Web application specific development rules and structure
+globs: ["apps/web/**/*"]
+alwaysApply: false
+---
+
+### Extends Frontend & Base Rules
+
+This file extends `01_base.mdc` and `02_frontend.mdc`. Follow all component design principles, styling guidelines, and state management rules defined in the frontend rules.
+
+### Web App Context
+
+You are developing the **user-facing web application**. Focus on:
+
+- User experience and conversion optimization
+- Public marketing pages and user onboarding
+- User authentication and subscription management
+- SEO optimization and performance
+- Mobile-first responsive design
+
+### Web-Specific Directory Structure
+
+```
+apps/web/src/
+├── app/
+│   ├── (public)/              # Public marketing pages (no auth required)
+│   │   ├── page.tsx           # Landing page - focus on conversion
+│   │   ├── about/
+│   │   │   └── page.tsx
+│   │   ├── pricing/
+│   │   │   └── page.tsx       # Pricing page with Stripe integration
+│   │   ├── contact/
+│   │   │   └── page.tsx
+│   │   └── layout.tsx         # Public layout with marketing header/footer
+│   ├── (auth)/                # User authentication flow
+│   │   ├── login/
+│   │   │   └── page.tsx       # Login with social providers
+│   │   ├── register/
+│   │   │   └── page.tsx       # Registration with email verification
+│   │   ├── forgot-password/
+│   │   │   └── page.tsx
+│   │   ├── reset-password/
+│   │   │   └── page.tsx
+│   │   └── layout.tsx         # Centered auth layout
+│   ├── (protected)/           # User dashboard (auth required)
+│   │   ├── dashboard/
+│   │   │   ├── page.tsx       # User dashboard overview
+│   │   │   └── loading.tsx
+│   │   ├── profile/
+│   │   │   ├── page.tsx
+│   │   │   └── settings/
+│   │   │       └── page.tsx
+│   │   ├── subscription/
+│   │   │   ├── page.tsx       # Subscription management
+│   │   │   ├── billing/
+│   │   │   │   └── page.tsx
+│   │   │   └── plans/
+│   │   │       └── page.tsx
+│   │   └── layout.tsx         # Protected layout with user sidebar
+│   ├── api/
+│   │   ├── auth/
+│   │   │   └── callback/
+│   │   │       └── route.ts   # Supabase auth callback
+│   │   ├── webhook/
+│   │   │   ├── stripe/
+│   │   │   │   └── route.ts   # Stripe webhooks for subscriptions
+│   │   │   └── supabase/
+│   │   │       └── route.ts
+│   │   └── trpc/
+│   │       └── [trpc]/
+│   │           └── route.ts
+│   ├── layout.tsx             # Root layout with providers
+│   ├── providers.tsx          # TanStack Query, Auth, Theme providers
+│   ├── globals.css            # Global styles (base layer only)
+│   ├── loading.tsx            # Global loading UI
+│   ├── error.tsx              # Global error boundary
+│   └── not-found.tsx          # 404 page with navigation
+├── components/
+│   ├── ui/                    # From @repo/ui + shadcn/ui components
+│   ├── auth/                  # Authentication feature components
+│   │   ├── LoginForm.tsx      # React Hook Form + Zod validation
+│   │   ├── RegisterForm.tsx
+│   │   ├── ForgotPasswordForm.tsx
+│   │   ├── AuthGuard.tsx      # Route protection component
+│   │   └── SocialLogin.tsx    # Social provider buttons
+│   ├── billing/               # Subscription & payment components
+│   │   ├── PricingCard.tsx    # Pricing display component
+│   │   ├── SubscriptionForm.tsx # Stripe Elements integration
+│   │   ├── PaymentMethod.tsx   # Payment method management
+│   │   ├── BillingHistory.tsx  # Invoice history
+│   │   └── PlanUpgrade.tsx     # Plan change interface
+│   ├── dashboard/             # User dashboard components
+│   │   ├── StatsOverview.tsx   # User metrics overview
+│   │   ├── RecentActivity.tsx  # Activity feed
+│   │   ├── QuickActions.tsx    # Action shortcuts
+│   │   └── UserMetrics.tsx     # User-specific analytics
+│   ├── marketing/             # Landing page components
+│   │   ├── HeroSection.tsx     # Hero with CTA
+│   │   ├── FeaturesSection.tsx # Feature highlights
+│   │   ├── Testimonials.tsx    # Social proof
+│   │   ├── CtaSection.tsx      # Call-to-action sections
+│   │   └── PricingSection.tsx  # Pricing display
+│   ├── layout/                # Layout components
+│   │   ├── Header.tsx          # Public header with navigation
+│   │   ├── Footer.tsx          # Footer with links
+│   │   ├── Sidebar.tsx         # Protected area sidebar
+│   │   ├── MobileNav.tsx       # Mobile navigation menu
+│   │   └── Breadcrumbs.tsx     # Breadcrumb navigation
+│   └── common/                # Common utility components
+│       ├── ErrorBoundary.tsx   # Error boundary implementation
+│       ├── LoadingSpinner.tsx  # Loading states
+│       ├── DataTable.tsx       # User data tables
+│       └── EmptyState.tsx      # Empty state illustrations
+├── features/                  # Feature-based organization (follows 02_frontend.mdc)
+│   ├── auth/                  # User authentication feature
+│   │   ├── components/        # Feature-specific components
+│   │   ├── hooks/
+│   │   │   ├── useAuth.ts     # Auth state management
+│   │   │   └── useLogout.ts   # Logout functionality
+│   │   ├── types/
+│   │   │   └── auth.types.ts  # Auth-related types
+│   │   └── utils/
+│   │       └── authUtils.ts   # Auth utility functions
+│   ├── billing/               # Subscription management feature
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   │   ├── useSubscription.ts # Subscription state with TanStack Query
+│   │   │   └── useBilling.ts      # Billing operations
+│   │   ├── types/
+│   │   └── utils/
+│   ├── dashboard/             # User dashboard feature
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   │   └── useDashboardData.ts # Dashboard data fetching
+│   │   ├── types/
+│   │   └── utils/
+│   └── profile/               # User profile management
+│       ├── components/
+│       ├── hooks/
+│       │   └── useProfile.ts  # Profile management
+│       ├── types/
+│       └── utils/
+├── hooks/                     # Shared React hooks (follows 02_frontend.mdc)
+│   ├── useAuth.ts
+│   ├── useSubscription.ts
+│   ├── useToast.ts
+│   ├── useMediaQuery.ts
+│   └── useLocalStorage.ts
+├── lib/
+│   ├── supabase/              # Supabase configuration
+│   │   ├── client.ts          # Client-side Supabase
+│   │   ├── server.ts          # Server-side Supabase
+│   │   └── middleware.ts      # Auth middleware
+│   ├── stripe/                # Stripe integration
+│   │   ├── client.ts          # Stripe client config
+│   │   ├── server.ts          # Stripe server config
+│   │   └── products.ts        # Product definitions
+│   ├── tanstack-query/        # TanStack Query setup (follows 02_frontend.mdc)
+│   │   ├── provider.tsx
+│   │   └── queries/
+│   │       ├── authQueries.ts
+│   │       ├── userQueries.ts
+│   │       ├── subscriptionQueries.ts
+│   │       └── billingQueries.ts
+│   ├── utils/
+│   │   ├── cn.ts              # clsx utility (from 02_frontend.mdc)
+│   │   ├── format.ts          # Formatting utilities
+│   │   ├── validation.ts      # Validation helpers
+│   │   └── seo.ts             # SEO utilities
+│   └── constants/
+│       ├── routes.ts          # Route definitions
+│       ├── config.ts          # App configuration
+│       └── plans.ts           # Subscription plans
+├── stores/                    # Zustand stores (follows 02_frontend.mdc)
+│   ├── authStore.ts           # Global auth state
+│   ├── uiStore.ts             # UI state (modals, themes)
+│   ├── billingStore.ts        # Billing/subscription state
+│   └── cartStore.ts           # Shopping cart state
+├── schemas/                   # Zod validation schemas (follows 02_frontend.mdc)
+│   ├── authSchema.ts
+│   ├── userSchema.ts
+│   ├── billingSchema.ts
+│   └── commonSchema.ts
+├── types/
+│   ├── global.d.ts
+│   ├── api.types.ts
+│   ├── auth.types.ts
+│   ├── billing.types.ts
+│   └── database.types.ts      # Generated from @repo/database
+└── middleware.ts              # Next.js middleware for auth
+```
+
+### Web App Specific Rules
+
+#### Route Groups & Navigation
+
+- Use `(public)` for marketing pages - optimize for SEO and conversion
+- Use `(auth)` for authentication flow - implement social login options
+- Use `(protected)` for user dashboard - require authentication middleware
+- Implement breadcrumb navigation for better UX in protected areas
+
+#### Marketing & SEO Focus
+
+- Optimize landing pages for conversion (A/B test ready)
+- Implement proper meta tags using Next.js metadata API
+- Use structured data for rich snippets
+- Optimize Core Web Vitals (LCP, FID, CLS)
+- Implement proper Open Graph and Twitter Card tags
+
+#### Authentication Flow (Extends 02_frontend.mdc form rules)
+
+- Use React Hook Form + Zod for all auth forms
+- Implement Supabase Auth with email/password and social providers
+- Create proper auth error handling and validation feedback
+- Handle auth state changes with TanStack Query
+- Implement email verification and password reset flows
+
+#### Subscription & Billing
+
+- Integrate Stripe Elements for secure payment processing
+- Create subscription management interface with plan upgrades/downgrades
+- Implement billing history with downloadable invoices
+- Handle webhook events for subscription state changes
+- Use optimistic updates for better UX during payment processing
+
+#### Performance Optimizations
+
+- Use Next.js Image component for all images
+- Implement proper loading states with Suspense boundaries
+- Use server components for initial page loads where possible
+- Implement code splitting at the route level
+- Optimize bundle size with dynamic imports for heavy components
+- Leverage React 19's improved concurrent features for better performance
+- Utilize Tailwind CSS v4's enhanced performance optimizations
+
+#### Mobile-First Responsive Design
+
+- Use Tailwind CSS v4's mobile-first breakpoint system
+- Test all forms and interactions on mobile devices
+- Implement touch-friendly navigation and interactions
+- Ensure proper viewport configuration
+- Use appropriate text sizes and touch targets
+- Leverage Tailwind v4's improved responsive design utilities
+
+#### Component Patterns (Extends 02_frontend.mdc)
+
+- Follow SRP and composition patterns from frontend rules
+- Use TanStack Query for all server state management
+- Use Zustand for global client state (auth, UI preferences)
+- Implement proper error boundaries at feature level
+- Use React.forwardRef for component library compatibility
+- Leverage React 19's enhanced concurrent features and automatic batching
+- Utilize React 19's improved use() hook for data fetching
+
+#### Form Handling (Follows 02_frontend.mdc)
+
+- ALWAYS use React Hook Form with Zod validation
+- Create reusable form components following component composition
+- Implement proper error handling and user feedback
+- Add form progress indicators for multi-step flows (subscription signup)
+- Use optimistic updates where appropriate
+
+### Web-Specific Naming Conventions
+
+- Route files: `kebab-case` (e.g., `forgot-password/page.tsx`)
+- Components: `PascalCase` (e.g., `LoginForm.tsx`) - follows 02_frontend.mdc
+- Hooks: `camelCase` with `use` prefix - follows 02_frontend.mdc
+- Store files: `camelCase` with `Store` suffix (e.g., `authStore.ts`)
+- Query files: `camelCase` with `Queries` suffix (e.g., `authQueries.ts`)
+
+### Integration Notes
+
+- This file works in conjunction with `02_frontend.mdc` - do NOT duplicate component design rules
+- Focus on web app specific patterns: marketing, auth flows, subscription management
+- All general frontend patterns (styling, state management, forms) are handled by `02_frontend.mdc`

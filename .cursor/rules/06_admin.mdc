@@ -1,0 +1,456 @@
+---
+description: Admin application specific development rules and structure
+globs: ["apps/admin/**/*"]
+alwaysApply: false
+---
+
+### Extends Frontend & Base Rules
+
+This file extends `01_base.mdc` and `02_frontend.mdc`. Follow all component design principles, styling guidelines, and state management rules defined in the frontend rules.
+
+### Admin App Context
+
+You are developing the **admin dashboard application**. Focus on:
+
+- Data management and CRUD operations with efficient interfaces
+- System analytics, reporting, and business intelligence
+- User management, moderation, and customer support tools
+- Content management and system configuration
+- Role-based access control and comprehensive audit logging
+- Power user workflows with keyboard shortcuts and bulk operations
+
+### Admin-Specific Directory Structure
+
+```
+apps/admin/src/
+├── app/
+│   ├── (auth)/                # Admin authentication
+│   │   ├── login/
+│   │   │   └── page.tsx       # Admin login with 2FA support
+│   │   ├── setup/             # Initial admin setup wizard
+│   │   │   └── page.tsx
+│   │   └── layout.tsx         # Minimal auth layout
+│   ├── dashboard/             # Main admin dashboard
+│   │   ├── page.tsx           # Dashboard overview with key metrics
+│   │   ├── loading.tsx        # Dashboard loading with skeleton
+│   │   ├── users/             # User management
+│   │   │   ├── page.tsx       # Users list with advanced filtering
+│   │   │   ├── [id]/
+│   │   │   │   ├── page.tsx   # User detail with activity log
+│   │   │   │   ├── edit/
+│   │   │   │   │   └── page.tsx # User edit form
+│   │   │   │   └── activity/
+│   │   │   │       └── page.tsx # User activity timeline
+│   │   │   ├── new/
+│   │   │   │   └── page.tsx   # Create new user
+│   │   │   └── bulk/
+│   │   │       └── page.tsx   # Bulk user operations
+│   │   ├── products/          # Product management
+│   │   │   ├── page.tsx       # Products list with inventory
+│   │   │   ├── [id]/
+│   │   │   │   ├── page.tsx   # Product detail
+│   │   │   │   └── edit/
+│   │   │   │       └── page.tsx
+│   │   │   ├── new/
+│   │   │   │   └── page.tsx
+│   │   │   └── categories/
+│   │   │       └── page.tsx   # Category management
+│   │   ├── orders/            # Order management
+│   │   │   ├── page.tsx       # Orders dashboard
+│   │   │   ├── [id]/
+│   │   │   │   └── page.tsx   # Order detail with fulfillment
+│   │   │   └── refunds/
+│   │   │       └── page.tsx   # Refund management
+│   │   ├── content/           # Content management system
+│   │   │   ├── page.tsx       # Content overview
+│   │   │   ├── posts/
+│   │   │   │   ├── page.tsx   # Blog post management
+│   │   │   │   ├── [id]/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── new/
+│   │   │   │       └── page.tsx
+│   │   │   ├── pages/
+│   │   │   │   └── page.tsx   # Static page management
+│   │   │   └── media/
+│   │   │       └── page.tsx   # Media library
+│   │   ├── analytics/         # Analytics & reporting
+│   │   │   ├── page.tsx       # Analytics dashboard
+│   │   │   ├── revenue/
+│   │   │   │   └── page.tsx   # Revenue analytics
+│   │   │   ├── users/
+│   │   │   │   └── page.tsx   # User analytics
+│   │   │   ├── traffic/
+│   │   │   │   └── page.tsx   # Traffic analytics
+│   │   │   └── reports/
+│   │   │       └── page.tsx   # Custom reports
+│   │   ├── support/           # Customer support
+│   │   │   ├── page.tsx       # Support dashboard
+│   │   │   ├── tickets/
+│   │   │   │   ├── page.tsx   # Support tickets
+│   │   │   │   └── [id]/
+│   │   │   │       └── page.tsx
+│   │   │   └── knowledge-base/
+│   │   │       └── page.tsx   # KB management
+│   │   ├── settings/          # System settings
+│   │   │   ├── page.tsx       # Settings overview
+│   │   │   ├── general/
+│   │   │   │   └── page.tsx   # General settings
+│   │   │   ├── integrations/
+│   │   │   │   └── page.tsx   # Third-party integrations
+│   │   │   ├── permissions/
+│   │   │   │   └── page.tsx   # Role & permission management
+│   │   │   ├── billing/
+│   │   │   │   └── page.tsx   # Billing configuration
+│   │   │   └── audit/
+│   │   │       └── page.tsx   # Audit log viewer
+│   │   └── layout.tsx         # Dashboard layout with admin sidebar
+│   ├── api/
+│   │   ├── admin/             # Admin-specific APIs
+│   │   │   ├── users/
+│   │   │   │   └── route.ts   # User management API
+│   │   │   ├── analytics/
+│   │   │   │   └── route.ts   # Analytics data API
+│   │   │   ├── settings/
+│   │   │   │   └── route.ts   # Settings management API
+│   │   │   └── audit/
+│   │   │       └── route.ts   # Audit logging API
+│   │   ├── webhook/           # Admin webhooks
+│   │   │   ├── user-events/
+│   │   │   │   └── route.ts   # User activity webhooks
+│   │   │   └── system-events/
+│   │   │       └── route.ts   # System event webhooks
+│   │   └── export/            # Data export endpoints
+│   │       ├── users/
+│   │       │   └── route.ts   # User data export
+│   │       ├── analytics/
+│   │       │   └── route.ts   # Analytics export
+│   │       └── audit/
+│   │           └── route.ts   # Audit log export
+│   ├── layout.tsx             # Root layout with admin providers
+│   ├── providers.tsx          # Admin-specific providers
+│   ├── globals.css            # Admin global styles
+│   ├── loading.tsx            # Global loading with admin branding
+│   ├── error.tsx              # Admin error boundary
+│   └── not-found.tsx          # Admin 404 page
+├── components/
+│   ├── ui/                    # From @repo/ui + shadcn/ui components
+│   ├── admin/                 # Admin-specific components
+│   │   ├── UserTable.tsx      # User management data table
+│   │   ├── UserForm.tsx       # User create/edit form
+│   │   ├── StatsCard.tsx      # Dashboard statistics cards
+│   │   ├── Chart.tsx          # Analytics chart wrapper
+│   │   ├── DataExport.tsx     # Data export functionality
+│   │   ├── BulkActions.tsx    # Bulk operations interface
+│   │   ├── PermissionGuard.tsx # Permission-based rendering
+│   │   ├── AuditLog.tsx       # Audit trail display
+│   │   ├── FilterPanel.tsx    # Advanced filtering interface
+│   │   └── StatusBadge.tsx    # Status indicators
+│   ├── tables/                # Data table components
+│   │   ├── DataTable.tsx      # Main reusable data table
+│   │   ├── DataTableToolbar.tsx # Table toolbar with search/filter
+│   │   ├── DataTablePagination.tsx # Pagination controls
+│   │   ├── ColumnHeader.tsx   # Sortable column headers
+│   │   ├── RowActions.tsx     # Row-level action menu
+│   │   ├── BulkSelector.tsx   # Bulk selection interface
+│   │   └── TableSkeleton.tsx  # Loading skeleton for tables
+│   ├── forms/                 # Form components
+│   │   ├── FormBuilder.tsx    # Dynamic form builder
+│   │   ├── FormSection.tsx    # Form section wrapper
+│   │   ├── FormField.tsx      # Reusable form field wrapper
+│   │   ├── FormActions.tsx    # Form action buttons
+│   │   ├── FieldArray.tsx     # Dynamic field arrays
+│   │   └── FormWizard.tsx     # Multi-step form wizard
+│   ├── charts/                # Chart components
+│   │   ├── LineChart.tsx      # Time series charts
+│   │   ├── BarChart.tsx       # Bar/column charts
+│   │   ├── PieChart.tsx       # Pie/donut charts
+│   │   ├── MetricCard.tsx     # Single metric display
+│   │   ├── Sparkline.tsx      # Mini trend charts
+│   │   └── Heatmap.tsx        # Activity heatmaps
+│   ├── layout/                # Layout components
+│   │   ├── AdminHeader.tsx    # Admin header with user menu
+│   │   ├── AdminSidebar.tsx   # Navigation sidebar with search
+│   │   ├── PageHeader.tsx     # Page title and action buttons
+│   │   ├── Breadcrumbs.tsx    # Admin breadcrumb navigation
+│   │   ├── CommandPalette.tsx # Search and quick actions (Cmd+K)
+│   │   └── NotificationCenter.tsx # Admin notifications
+│   └── common/                # Common admin components
+│       ├── ErrorBoundary.tsx  # Admin error boundary
+│       ├── LoadingSpinner.tsx # Loading states
+│       ├── EmptyState.tsx     # Empty state with actions
+│       ├── ConfirmationDialog.tsx # Destructive action confirmation
+│       ├── StatusBadge.tsx    # Status indicators
+│       ├── Tooltip.tsx        # Enhanced tooltips
+│       └── HelpButton.tsx     # Contextual help
+├── features/                  # Feature-based organization (follows 02_frontend.mdc)
+│   ├── user-management/       # User CRUD operations
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   │   ├── useUsers.ts    # User data fetching with TanStack Query
+│   │   │   ├── useUserActions.ts # User CRUD operations
+│   │   │   ├── useUserFilters.ts # Advanced filtering
+│   │   │   └── useBulkUserActions.ts # Bulk operations
+│   │   ├── types/
+│   │   │   └── userManagement.types.ts
+│   │   └── utils/
+│   │       └── userUtils.ts
+│   ├── analytics/             # System analytics
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   │   ├── useAnalytics.ts # Analytics data with caching
+│   │   │   ├── useReports.ts   # Report generation
+│   │   │   └── useMetrics.ts   # Real-time metrics
+│   │   ├── types/
+│   │   └── utils/
+│   ├── content-management/    # CMS functionality
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   │   ├── useContent.ts   # Content CRUD operations
+│   │   │   ├── useMedia.ts     # Media management
+│   │   │   └── useWorkflow.ts  # Content workflow
+│   │   ├── types/
+│   │   └── utils/
+│   ├── system-settings/       # System configuration
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   │   ├── useSettings.ts  # Settings management
+│   │   │   └── useIntegrations.ts # Third-party integrations
+│   │   ├── types/
+│   │   └── utils/
+│   ├── support/               # Customer support
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   │   ├── useTickets.ts   # Support ticket management
+│   │   │   └── useKnowledgeBase.ts # KB management
+│   │   ├── types/
+│   │   └── utils/
+│   └── audit/                 # Audit and logging
+│       ├── components/
+│       ├── hooks/
+│       │   ├── useAuditLog.ts  # Audit log querying
+│       │   └── useActivityTracking.ts # Activity tracking
+│       ├── types/
+│       └── utils/
+├── hooks/                     # Shared admin hooks (follows 02_frontend.mdc)
+│   ├── useAdminAuth.ts        # Admin authentication
+│   ├── usePermissions.ts      # Permission checking
+│   ├── useDataTable.ts        # Data table state management
+│   ├── useFilters.ts          # Advanced filtering
+│   ├── useBulkActions.ts      # Bulk operations
+│   ├── useExport.ts           # Data export functionality
+│   ├── useKeyboardShortcuts.ts # Admin keyboard shortcuts
+│   └── useCommandPalette.ts   # Command palette functionality
+├── lib/
+│   ├── supabase/              # Supabase configuration
+│   │   ├── adminClient.ts     # Admin Supabase client with elevated privileges
+│   │   ├── server.ts          # Server-side operations
+│   │   └── rlsBypass.ts       # RLS bypass for admin operations
+│   ├── permissions/           # Permission system
+│   │   ├── roles.ts           # Role definitions and hierarchies
+│   │   ├── permissions.ts     # Permission checking utilities
+│   │   ├── middleware.ts      # Permission middleware
+│   │   └── rbac.ts            # Role-based access control logic
+│   ├── analytics/             # Analytics utilities
+│   │   ├── metrics.ts         # Metric calculation utilities
+│   │   ├── reports.ts         # Report generation logic
+│   │   ├── exporters.ts       # Data export utilities
+│   │   └── aggregators.ts     # Data aggregation functions
+│   ├── tanstack-query/        # TanStack Query setup (follows 02_frontend.mdc)
+│   │   ├── provider.tsx
+│   │   └── queries/
+│   │       ├── usersQueries.ts # User management queries
+│   │       ├── analyticsQueries.ts # Analytics queries
+│   │       ├── contentQueries.ts # Content management queries
+│   │       ├── settingsQueries.ts # Settings queries
+│   │       └── auditQueries.ts # Audit log queries
+│   ├── utils/
+│   │   ├── cn.ts              # clsx utility (from 02_frontend.mdc)
+│   │   ├── format.ts          # Admin-specific formatting
+│   │   ├── validation.ts      # Admin validation utilities
+│   │   ├── filters.ts         # Data filtering utilities
+│   │   ├── sorting.ts         # Data sorting utilities
+│   │   ├── export.ts          # Export formatting utilities
+│   │   └── search.ts          # Search functionality utilities
+│   └── constants/
+│       ├── routes.ts          # Admin route definitions
+│       ├── config.ts          # Admin configuration
+│       ├── permissions.ts     # Permission constants
+│       ├── statuses.ts        # Status definitions
+│       └── roles.ts           # Role constants
+├── stores/                    # Zustand stores (follows 02_frontend.mdc)
+│   ├── adminAuthStore.ts      # Admin authentication state
+│   ├── permissionsStore.ts    # Permissions and role state
+│   ├── uiStore.ts             # Admin UI state (sidebar, modals)
+│   ├── filtersStore.ts        # Global filter state
+│   ├── bulkActionsStore.ts    # Bulk operation state
+│   └── notificationsStore.ts  # Admin notifications
+├── schemas/                   # Zod validation schemas (follows 02_frontend.mdc)
+│   ├── userSchema.ts          # User management schemas
+│   ├── contentSchema.ts       # Content management schemas
+│   ├── settingsSchema.ts      # Settings schemas
+│   ├── analyticsSchema.ts     # Analytics schemas
+│   └── auditSchema.ts         # Audit log schemas
+├── types/
+│   ├── global.d.ts
+│   ├── admin.types.ts         # Admin-specific types
+│   ├── permissions.types.ts   # Permission system types
+│   ├── analytics.types.ts     # Analytics types
+│   ├── audit.types.ts         # Audit logging types
+│   └── database.types.ts      # Generated from @repo/database
+└── middleware.ts              # Admin auth and permission middleware
+```
+
+### Admin App Specific Rules
+
+#### Authentication & Authorization (Extends 02_frontend.mdc)
+
+- Implement separate admin authentication with enhanced security (2FA)
+- Use comprehensive role-based access control (RBAC) with hierarchical permissions
+- Create permission guards for both routes and individual components
+- Implement session management with automatic logout for security
+- Log all administrative actions for audit compliance
+
+#### Data Management & CRUD Operations
+
+- Create comprehensive CRUD interfaces following 02_frontend.mdc form patterns
+- Use React Hook Form + Zod for all admin forms with server-side validation
+- Implement optimistic updates with TanStack Query for better UX
+- Add bulk operations for efficiency (bulk delete, update, export)
+- Create advanced filtering and sorting capabilities
+- Implement real-time data updates where appropriate
+
+#### Table & List Management
+
+- Use consistent data table patterns across all admin interfaces
+- Implement virtual scrolling for large datasets (>1000 items)
+- Add column customization (show/hide, reorder, resize)
+- Create exportable data tables with multiple format support
+- Implement saved filter presets for power users
+- Add keyboard navigation for tables (arrow keys, Enter, Escape)
+
+#### Analytics & Reporting
+
+- Build comprehensive dashboard with key business metrics
+- Create interactive charts using recharts library
+- Implement real-time metric updates where applicable
+- Add report scheduling and automated email delivery
+- Create custom report builder interface
+- Implement data drill-down capabilities
+
+#### Bulk Operations & Power User Features
+
+- Implement bulk actions with confirmation dialogs for destructive operations
+- Add keyboard shortcuts for common admin tasks (Cmd+K for command palette)
+- Create undo/redo functionality for critical operations
+- Implement quick actions and batch processing
+- Add progress indicators for long-running operations
+
+#### Performance & Scalability
+
+- Use virtual scrolling for large data tables
+- Implement proper pagination with infinite scroll options
+- Use React.memo strategically for expensive admin components
+- Implement proper caching strategies with TanStack Query
+- Add loading skeletons for all data-heavy interfaces
+
+#### User Experience for Admins
+
+- Create contextual help and tooltips throughout the interface
+- Implement breadcrumb navigation for deep page hierarchies
+- Add command palette (Cmd+K) for quick navigation and actions
+- Create notification center for system alerts and updates
+- Implement proper error states with recovery actions
+
+#### Security & Audit
+
+- Log all administrative actions with user, timestamp, and change details
+- Implement rate limiting for admin API endpoints
+- Add IP whitelisting capabilities for admin access
+- Create audit trail viewer with search and filtering
+- Implement data retention policies for audit logs
+
+#### Component Patterns (Extends 02_frontend.mdc)
+
+- Follow SRP and composition patterns from frontend rules
+- Use TanStack Query for all server state with admin-specific cache strategies
+- Use Zustand for admin-specific global state (permissions, UI preferences)
+- Implement permission-based rendering throughout the application
+- Create reusable admin-specific components (data tables, forms, charts)
+- Leverage React 19's enhanced concurrent features and automatic batching
+- Utilize React 19's improved use() hook for data fetching
+
+#### Form Handling (Follows 02_frontend.mdc)
+
+- ALWAYS use React Hook Form with Zod validation
+- Create admin-specific form components (FormBuilder, FormWizard)
+- Implement proper validation with server-side confirmation
+- Add auto-save functionality for long forms
+- Create form templates for common admin operations
+
+### Admin-Specific Naming Conventions
+
+- Route files: `kebab-case` (e.g., `user-management/page.tsx`)
+- Components: `PascalCase` (e.g., `UserTable.tsx`) - follows 02_frontend.mdc
+- Hooks: `camelCase` with `use` prefix - follows 02_frontend.mdc
+- Store files: `camelCase` with `Store` suffix (e.g., `adminAuthStore.ts`)
+- Query files: `camelCase` with `Queries` suffix (e.g., `usersQueries.ts`)
+- Permission constants: `SCREAMING_SNAKE_CASE` (e.g., `USER_MANAGEMENT_READ`)
+
+### Admin-Specific Patterns
+
+#### Permission-Based Rendering
+
+```typescript
+// Use permission guards consistently throughout admin interface
+<PermissionGuard permission="users.edit" fallback={<ReadOnlyView />}>
+  <EditUserButton />
+</PermissionGuard>
+```
+
+#### Data Table Pattern
+
+```typescript
+// Consistent table implementation across admin interfaces
+interface AdminTableProps<T> {
+  data: T[];
+  columns: ColumnDef<T>[];
+  isLoading?: boolean;
+  onRowSelect?: (rows: T[]) => void;
+  onBulkAction?: (action: string, rows: T[]) => void;
+  onExport?: (format: "csv" | "xlsx" | "pdf") => void;
+  enableSearch?: boolean;
+  enableFilters?: boolean;
+}
+```
+
+#### Bulk Actions Pattern
+
+```typescript
+// Implement consistent bulk operations across admin features
+const { selectedRows, bulkDelete, bulkUpdate, bulkExport } = useBulkActions({
+  onSuccess: () => queryClient.invalidateQueries(["admin", entityType]),
+  confirmationRequired: true,
+  auditLog: true,
+});
+```
+
+#### Audit Logging Pattern
+
+```typescript
+// Consistent audit logging for all admin actions
+const { logAction } = useAuditLog();
+
+const handleUserUpdate = async (userId: string, data: UserUpdateData) => {
+  const result = await updateUser(userId, data);
+  await logAction("USER_UPDATED", { userId, changes: data });
+  return result;
+};
+```
+
+### Integration Notes
+
+- This file works in conjunction with `01_base.mdc` and `02_frontend.mdc`
+- Do NOT duplicate component design rules, styling guidelines, or state management patterns
+- Focus on admin-specific workflows: data management, analytics, user management, system configuration
+- All general frontend patterns are handled by `02_frontend.mdc`
+- Security and audit logging are critical for admin interfaces
