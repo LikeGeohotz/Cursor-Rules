@@ -1,0 +1,9 @@
+# すべてのファイルとフォルダを除外
+*
+
+# .cursorフォルダとその中身は含める
+!.cursor/
+!.cursor/**
+
+# .gitignoreファイル自体は含める
+!.gitignore
